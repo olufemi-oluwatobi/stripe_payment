@@ -4,16 +4,23 @@
   "description": "A sample Stripe implementation",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "node server.js",
+    "build": "NODE_ENV=production"
   },
   "author": "stripe-samples",
   "license": "ISC",
   "dependencies": {
+    "@babel/core": "^7.13.8",
     "@types/stripe": "^8.0.417",
+    "babel-loader": "^8.2.2",
     "body-parser": "^1.19.0",
+    "dot-env": "^0.0.1",
+    "dotenv": "^8.2.0",
     "ejs": "^3.1.6",
     "express": "^4.17.1",
     "nodemon": "^2.0.7",
-    "stripe": "^8.137.0"
+    "stripe": "^8.137.0",
+    "webpack": "^5.24.2",
+    "webpack-cli": "^4.5.0"
   }
 }

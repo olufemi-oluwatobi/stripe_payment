@@ -4,7 +4,7 @@ let stripe = require("stripe");
 const bodyParser = require("body-parser");
 const path = require("path");
 stripe = stripe(
-  "sk_test_51H63DSDC32qKcNvNU8aby9QXGKbGI8um9bjWidf5mnJUb0qn61TGh7GqjpbZyAUWBegc0JeTWZXHs07sEuB2gwEj005wUlVwGi"
+  "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"
 );
 
 const app = express();
