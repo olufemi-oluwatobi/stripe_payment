@@ -13,18 +13,18 @@ before_script:
   - "which rsync || ( apt-get update -y && apt-get install rsync -y )"
   - eval $(ssh-agent -s)
   # Inject the remote's private key
-  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+  - echo "$SSH_PRIVATE_KEY_OLD" | tr -d '\r' | ssh-add - > /dev/null
   - mkdir -p ~/.ssh
   - chmod 700 ~/.ssh
   # Append keyscan output into known hosts
-  - ssh-keyscan $SERVER_IP >> ~/.ssh/known_hosts
+  - ssh-keyscan $SERVER_IP_OLD >> ~/.ssh/known_hosts
   - chmod 644 ~/.ssh/known_hosts
   - npm install
 
 deploy:
   stage: deploy
   script:
-    - rsync -avuz --exclude=".*" $CI_PROJECT_DIR $SERVER_USER@$SERVER_IP:~
+    - rsync -avuz --exclude=".*" $CI_PROJECT_DIR $SERVER_USER@$SERVER_IP_OLD:~
     # Non interactive ssh gracefully reloads server
     - ssh $SERVER_USER@$SERVER_IP '. /etc/profile; pm2 reload all'
   only:

@@ -34,22 +34,33 @@ app.get("/customers", async (req, res) => {
   const customers = await stripe.customers.list();
 
   const data = customers.data.map((customer) => ({
+    id: customer.id,
     name: customer.name,
     email: customer.email,
   }));
   res.status(200).json(data);
 });
+
+app.get("/customers/:id/cards", async (req, res) => {
+  const cards = await stripe.customers.listSources(req.params.id, {
+    object: "card",
+    limit: 3,
+  });
+  res.status(200).json(cards.data);
+});
+
 app.post("/charge", (req, res) => {
+  console.log("charg", req.body);
   try {
     findOrCreateCustomer({
       name: req.body.name,
       email: req.body.email,
-      source: req.body.stripeToken,
+      source: req.body.cardId || req.body.stripeToken,
     })
       .then((customer) => {
         console.log(customer);
         return stripe.charges.create({
-          amount: req.body.amount * 100,
+          amount: req.body.amount,
           description: req.body.description,
           currency: "usd",
           customer: customer.id,
