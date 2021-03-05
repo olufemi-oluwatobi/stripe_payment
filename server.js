@@ -1,11 +1,15 @@
 const express = require("express");
+const env = require("dotenv");
+
 let stripe = require("stripe");
 // This is your real test secret API key.
 const bodyParser = require("body-parser");
 const path = require("path");
-stripe = stripe(
-  "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"
-);
+env.config(path.join(__dirname, ".env"));
+
+console.log(process.env.SECRET_KEY);
+
+stripe = stripe(process.env.SECRET_KEY);
 
 const app = express();
 
@@ -26,7 +30,15 @@ const findOrCreateCustomer = (customerData) =>
       if (customer.data[0]) return customer.data[0];
       return stripe.customers.create(customerData).then((data) => data);
     });
+app.get("/customers", async (req, res) => {
+  const customers = await stripe.customers.list();
 
+  const data = customers.data.map((customer) => ({
+    name: customer.name,
+    email: customer.email,
+  }));
+  res.status(200).json(data);
+});
 app.post("/charge", (req, res) => {
   try {
     findOrCreateCustomer({
