@@ -1,5 +1,5 @@
 const stripe = Stripe(
-  "pk_live_51H63DSDC32qKcNvNuaPLNyIBKWQDdmeQI68nJWwpCxxKRUrONlweEFegRE3KSTUXLK9NwvpG4TvKZbJEKC6PvSAs001l7EtDsP"
+  "pk_live_51H63DSDC32qKcNvNV4AHH65chUEkhJSpQull5HypRjF8Q0NxvcO3zOcU8JTuE1SCAxHF2WfRVwIBPrZz9bqULE2N00AiewAo3v"
 ); // Your Publishable Key
 
 const elements = stripe.elements();
