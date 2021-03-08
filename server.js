@@ -60,14 +60,14 @@ app.post("/charge", (req, res) => {
       .then((customer) => {
         console.log(customer);
         return stripe.charges.create({
-          amount: req.body.amount,
+          amount: req.body.amount * 100,
           description: req.body.description,
           currency: "usd",
           customer: customer.id,
         });
       })
       .then(() => res.render("completed.html"))
-      .catch((err) => console.log(err));
+      .catch((err) => res.render("error.html"));
   } catch (err) {
     console.log(err);
     res.send(err.toString());
