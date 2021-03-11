@@ -1,5 +1,5 @@
 const stripe = Stripe(
-  "pk_live_51H63DSDC32qKcNvNV4AHH65chUEkhJSpQull5HypRjF8Q0NxvcO3zOcU8JTuE1SCAxHF2WfRVwIBPrZz9bqULE2N00AiewAo3v"
+  "pk_test_51H63DSDC32qKcNvNV4AHH65chUEkhJSpQull5HypRjF8Q0NxvcO3zOcU8JTuE1SCAxHF2WfRVwIBPrZz9bqULE2N00AiewAo3v"
 ); // Your Publishable Key
 
 const elements = stripe.elements();
@@ -27,8 +27,8 @@ const getCustomerList = () => {
     .then((data) => data.json())
     .then((data) => {
       customerList = data;
-      const emails = data.map((data) => data.email).filter((data) => data);
-      const names = data.map((data) => data.name).filter((data) => data);
+      const emails = data.map((data) => data.email);
+      const names = data.map((data) => data.name);
       populateDataList("name", names);
       populateDataList("email", emails);
     });
@@ -110,6 +110,7 @@ function formDataToJSON(FormElement) {
 // Create token from card data
 form.addEventListener("submit", (e) => {
   e.preventDefault();
+
   const cardElementVisibility = document.getElementById("card-element").hidden;
   console.log(cardElementVisibility);
   if (!cardElementVisibility) {

@@ -1,12 +1,22 @@
 const express = require("express");
 const env = require("dotenv");
+const puppeteer = require("puppeteer");
+const fs = require("fs");
 
 let stripe = require("stripe");
+let pdf = require("html-pdf");
 // This is your real test secret API key.
 const bodyParser = require("body-parser");
 const path = require("path");
 env.config(path.join(__dirname, ".env"));
 
+const convertFileToDataUrl = (url) => {
+  var mime = "application/pdf";
+  var encoding = "base64";
+  var data = fs.readFileSync(url).toString(encoding);
+  var uri = "data:" + mime + ";" + encoding + "," + data;
+  return uri;
+};
 console.log(process.env.SECRET_KEY);
 
 stripe = stripe(process.env.SECRET_KEY);
@@ -21,6 +31,16 @@ app.set("view engine", "ejs");
 app.engine("html", require("ejs").renderFile);
 
 app.use(express.static(path.join(__dirname, "./views")));
+
+async function printPDF(url) {
+  const browser = await puppeteer.launch({ headless: true });
+  const page = await browser.newPage();
+  await page.goto(url, { waitUntil: "networkidle0" });
+  const pdf = await page.pdf({ format: "A4" });
+
+  await browser.close();
+  return pdf;
+}
 
 const findOrCreateCustomer = (customerData) =>
   stripe.customers
@@ -48,7 +68,32 @@ app.get("/customers/:id/cards", async (req, res) => {
   });
   res.status(200).json(cards.data);
 });
+app.get("/authorize", (req, res) => {
+  console.log(req);
+});
+app.post("/login", async (req, res) => {
+  try {
+    const persons = await stripe.accounts.listPersons("acct_1H63DSDC32qKcNvN", {
+      limit: 3,
+    });
+    res.status(200).json({ persons });
+  } catch (error) {
+    console.log(error);
+  }
+});
 
+app.get("/download_reciept", async (req, res) => {
+  try {
+    const { url } = req.query;
+    const pdfPath = await printPDF(url);
+    res.setHeader("Content-Disposition", "attachment; filename=reciept.pdf");
+    res.setHeader("Content-Type", "application/pdf");
+    res.send(new Buffer(pdfPath, "binary"));
+  } catch (error) {
+    console.log(error);
+    res.send(error);
+  }
+});
 app.post("/charge", (req, res) => {
   console.log("charg", req.body);
   try {
@@ -66,8 +111,16 @@ app.post("/charge", (req, res) => {
           customer: customer.id,
         });
       })
-      .then(() => res.render("completed.html"))
-      .catch((err) => res.render("error.html"));
+      .then(async (data) => {
+        console.log();
+        //const pdfPath = await printPDF(data.receipt_url);
+        //const response = `http://docs.google.com/gview?${pdfPath}&embedded=true`;
+        res.render(`completed`, { reciept: data.receipt_url });
+      })
+      .catch((err) => {
+        console.log(err);
+        res.render("error.html");
+      });
   } catch (err) {
     console.log(err);
     res.send(err.toString());

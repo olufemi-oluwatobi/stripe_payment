@@ -18,8 +18,12 @@
     "dotenv": "^8.2.0",
     "ejs": "^3.1.6",
     "express": "^4.17.1",
+    "html-pdf": "^2.2.0",
+    "html-pdf-node": "^1.0.7",
     "nodemon": "^2.0.7",
+    "puppeteer": "^8.0.0",
     "stripe": "^8.137.0",
+    "url2pdf": "^0.4.7",
     "webpack": "^5.24.2",
     "webpack-cli": "^4.5.0"
   }
