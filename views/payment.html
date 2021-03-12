@@ -16,6 +16,10 @@
 </head>
 
 <body class="bg-white">
+    <div id="admin_gear" class="flex items-end justify-end p-5">
+
+
+    </div>
     <div class="flex justify-center mt-10">
         <form action="/charge" onsubmit="submit_button.disabled = true; return true;" method="POST"
             class="flex flex-col w-1/2">
@@ -41,12 +45,13 @@
                 placeholder="Customer Cards" list="card-list">
             <datalist id="card-list">
             </datalist>
-            <button name="submit_button" class="text-black bg-purple-900 p-4 rounded">Submit Payment</button>
+            <button name="submit_button" class="text-white bg-purple-900 p-4 rounded">Submit Payment</button>
         </form>
     </div>
 </body>
 
 <script src="https://js.stripe.com/v3/"></script>
 <script src="card.js"></script>
+<script src="user.js"></script>
 
 </html>

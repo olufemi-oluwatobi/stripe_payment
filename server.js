@@ -2,6 +2,7 @@ const express = require("express");
 const env = require("dotenv");
 const puppeteer = require("puppeteer");
 const fs = require("fs");
+const url = require("url");
 
 let stripe = require("stripe");
 let pdf = require("html-pdf");
@@ -41,6 +42,7 @@ const app = express();
 
 // This will make our form data much more useful
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 // This will set express to render our views folder, then to render the files as normal html
 app.set("view engine", "ejs");
@@ -85,7 +87,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/customers", async (req, res) => {
-  const customers = await stripe.customers.list();
+  const customers = await stripe.customers.list({ limit: 3000 });
 
   const data = customers.data.map((customer) => ({
     id: customer.id,
@@ -95,6 +97,119 @@ app.get("/customers", async (req, res) => {
   res.status(200).json(data);
 });
 
+app.post("/new_keys", (req, res) => {
+  try {
+    const { publishKey, secretKey } = req.body;
+    console.log(publishKey, secretKey);
+    if (![publishKey, secretKey].some(Boolean)) {
+      return res.render("admin", {
+        error: "Publish key and secret key are required",
+        success: "",
+      });
+    }
+    let data = { publishKey, secretKey };
+    data = JSON.stringify(data);
+    console.log(data);
+    fs.writeFileSync("./keys.json", data);
+    res.render("admin", { error: "", success: "New Keys Stored" });
+  } catch (error) {
+    res.render("admin", { error: error.toString(), success: "" });
+  }
+});
+
+app.get("/admin", (req, res) => {
+  res.render("admin", { error: "", success: "" });
+});
+
+app.get("/users", async (req, res) => {
+  try {
+    const { authorization } = req.headers;
+    console.log(authorization);
+    const { status, data } = await axios({
+      url: "http://localhost:4030/user",
+      method: "GET",
+      headers: {
+        Authorization: authorization,
+      },
+    });
+    res.status(200).json({ users: data.users });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error });
+  }
+});
+
+app.put("/users/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log(id);
+    const { username, role } = req.body;
+
+    console.log(req.body);
+    const { status, data } = await axios({
+      url: `http://localhost:4030/user/${id}`,
+      method: "PUT",
+      data: { username, role },
+      headers: req.headers,
+    });
+
+    res.status(status).json(data);
+  } catch (error) {
+    console.log(error.response.status);
+    if (error.response.status === 401) return res.redirect("/");
+    res.status(error.response.status).json({ error: error.response.data });
+  }
+});
+
+app.delete("/users/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log(id);
+    const { username, role } = req.body;
+
+    console.log(req.body);
+    const { status, data } = await axios({
+      url: `http://localhost:4030/user/${id}`,
+      method: "DELETE",
+      data: { username, role },
+      headers: req.headers,
+    });
+
+    res.status(status).json(data);
+  } catch (error) {
+    console.log(error.response.status);
+    if (error.response.status === 401) return res.redirect("/");
+    res.status(error.response.status).json({ error: error.response.data });
+  }
+});
+
+app.post("/users", async (req, res, next) => {
+  try {
+    const { username, password, role } = req.body;
+
+    const { status, data } = await axios({
+      url: "http://localhost:4030/user",
+      method: "POST",
+      data: { username, password, role },
+    });
+    if (status === 201) {
+      console.log(data);
+      const { user } = data;
+      delete user.password;
+      const newPath = url.format({
+        pathname: "/admin",
+        query: {
+          user: JSON.stringify(user),
+        },
+      });
+      return res.redirect(newPath);
+    }
+    // return res.render("index", { error: "Invalid Credentials" });
+  } catch (error) {
+    console.log(error);
+    return res.render("admin", { error: error.response.data, success: "" });
+  }
+});
 app.post("/login", async (req, res, next) => {
   try {
     const { username, password } = req.body;
@@ -105,7 +220,17 @@ app.post("/login", async (req, res, next) => {
       data: { username, password },
     });
     if (status === 200) {
-      return res.redirect("/payment");
+      const { user, token } = data;
+      delete user.password;
+
+      const newPath = url.format({
+        pathname: "/payment",
+        query: {
+          user: JSON.stringify(user),
+          token,
+        },
+      });
+      return res.redirect(newPath);
     }
     return res.render("index", { error: "Invalid Credentials" });
   } catch (error) {
@@ -128,7 +253,8 @@ app.post("/login", async (req, res, next) => {
 });
 
 app.get("/payment", async (req, res, next) => {
-  return res.render("payment.html");
+  const { user, token } = req.query;
+  return res.render("payment.html", { user, token });
 });
 
 app.get("/customers/:id/cards", async (req, res) => {
