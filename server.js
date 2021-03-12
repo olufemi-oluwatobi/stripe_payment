@@ -5,9 +5,25 @@ const fs = require("fs");
 
 let stripe = require("stripe");
 let pdf = require("html-pdf");
+const axios = require("axios");
 // This is your real test secret API key.
 const bodyParser = require("body-parser");
+const { SECRET_KEY } = require("./config/index");
 const path = require("path");
+
+const instance = axios.create({
+  baseURL: "http://localhost:3000/",
+  timeout: 1000,
+  headers: { "X-Custom-Header": "foobar" },
+});
+
+// const MONGO_URL =
+//   "mongodb+srv://kws:Password123@cluster0.ns83g.mongodb.net/kws_server?retryWrites=true&w=majority";
+// mongoose
+//   .connect(MONGO_URL, { useNewUrlParser: true })
+//   .then(() => console.log("connected to mongo"))
+//   .catch((error) => console.log(error));
+
 env.config(path.join(__dirname, ".env"));
 
 const convertFileToDataUrl = (url) => {
@@ -29,13 +45,24 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // This will set express to render our views folder, then to render the files as normal html
 app.set("view engine", "ejs");
 app.engine("html", require("ejs").renderFile);
+// app.use(
+//   session({
+//     secret: SECRET_KEY,
+//     resave: false,
+//     saveUninitialized: true,
+//     store: MongoStore.create({ mongoUrl: MONGO_URL }),
+//   })
+// );
 
+// app.use(passport.initialize());
+// app.use(passport.session());
 app.use(express.static(path.join(__dirname, "./views")));
 
 async function printPDF(url) {
   const browser = await puppeteer.launch({
     headless: true,
-    args: ['--no-sandbox'] });
+    args: ["--no-sandbox"],
+  });
   const page = await browser.newPage();
   await page.goto(url, { waitUntil: "networkidle0" });
   const pdf = await page.pdf({ format: "A4" });
@@ -52,6 +79,11 @@ const findOrCreateCustomer = (customerData) =>
       if (customer.data[0]) return customer.data[0];
       return stripe.customers.create(customerData).then((data) => data);
     });
+
+app.get("/", (req, res) => {
+  res.render("index", { error: "" });
+});
+
 app.get("/customers", async (req, res) => {
   const customers = await stripe.customers.list();
 
@@ -61,6 +93,42 @@ app.get("/customers", async (req, res) => {
     email: customer.email,
   }));
   res.status(200).json(data);
+});
+
+app.post("/login", async (req, res, next) => {
+  try {
+    const { username, password } = req.body;
+
+    const { status, data } = await axios({
+      url: "http://localhost:4030/login",
+      method: "POST",
+      data: { username, password },
+    });
+    if (status === 200) {
+      return res.redirect("/payment");
+    }
+    return res.render("index", { error: "Invalid Credentials" });
+  } catch (error) {
+    console.log(error);
+    return res.render("index", { error: "invalid credential" });
+  }
+
+  // passport.authenticate("local", (err, user, info) => {
+  //   if (err) return res.status(400).json({ error: err });
+  // });
+  // if (!user) {
+  //   return res.status(400).json({ errors: "No user found" });
+  // }
+  // req.logIn(user, (err) => {
+  //   if (err) {
+  //     return res.status(400).json({ error: err });
+  //   }
+  //   return res.status(200).json({ user });
+  // })(req, res, next);
+});
+
+app.get("/payment", async (req, res, next) => {
+  return res.render("payment.html");
 });
 
 app.get("/customers/:id/cards", async (req, res) => {

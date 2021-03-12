@@ -10,15 +10,16 @@
 <body class="flex h-screen bg-indigo-700">
     <div class="w-full max-w-xs m-auto bg-indigo-100 rounded p-5">
         <header>
-            <img class="w-20 mx-auto mb-5" src="https://img.icons8.com/fluent/344/year-of-tiger.png" />
-            <span class="w-full --2 mb-6 border-b-2"></span>
+            <span id="error_message" class="w-full --2 mb-6 border-b-2">
+                <%= error %>
+            </span>
         </header>
-        <form onsubmit="return onSubmit()">
+        <form action="/login" method="POST" id="form1">
             <div>
                 <label class=" block mb-2 text-indigo-500" for="username">Username</label>
                 <input required
                     class="w-full p-2 mb-6 text-indigo-700 border-b-2 border-indigo-500 outline-none focus:bg-gray-300"
-                    type="text" name="username" id="username">
+                    type="text" name="username" id="username"></input>
                 <span hidden name="username" id="username_error" class="text-xs text-red-500">username is
                     required</span>
             </div>
@@ -26,14 +27,14 @@
                 <label class="block mb-2 text-indigo-500" for="password">Password</label>
                 <input required
                     class="w-full p-2 mb-6 text-indigo-700 border-b-2 border-indigo-500 outline-none focus:bg-gray-300"
-                    type="password" name="password">
+                    type="password" name="password" />
                 <span hidden name="password" id="password_error" class="text-xs text-red-500">password is
                     required</span>
 
             </div>
             <div>
                 <button class="w-full bg-indigo-700 hover:bg-pink-700 text-white font-bold py-2 px-4 mb-6 rounded"
-                    type="submit">
+                    type="submit">Login In</button>
             </div>
         </form>
         <footer>
@@ -44,11 +45,14 @@
     </div>
 </body>
 <script>
+
     const toggleDisplay = (id, isHidden) => {
         document.getElementById(id).hidden = isHidden
     }
+
     const password = document.getElementById("username")
     const username = document.getElementById("password")
+    console.log(username)
     password.addEventListener(("blur"), () => {
         if (password.innerHTML.length < 2) {
             toggleDisplay("password_error", true)
@@ -88,8 +92,12 @@
         if (!empty.length) {
             toggleDisplay("password_error", false)
             toggleDisplay("username_error", false)
+            const data = {
+                password: password.innerText,
+                username: username.innerText
+            }
 
-            fetch("/login", {
+            return fetch("/login", {
                 mode: 'cors', // no-cors, *cors, same-origin
                 cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
                 credentials: 'same-origin', // include, *same-origin, omit
@@ -102,7 +110,18 @@
                 body: JSON.stringify(data), method: "POST",
             }).then(res => {
                 status = res.status
-            }).then(tes => tes)
+                return res.json()
+            }).then(tes => {
+                if (status !== 200) {
+                    document.getElementById("error_message").innerHTML = "Invalid Credentials"
+                } else {
+                    window.open("/payment")
+                }
+
+            }).catch(error => {
+                console.log(error)
+                document.getElementById("error_message").innerHTML = "Network Error"
+            })
         }
     }
 
