@@ -25,7 +25,7 @@ const getUserType = () => {
   const isAdmin = userData.role.toLowerCase() === "admin";
   if (isAdmin) {
     document.getElementById("admin_gear").innerHTML =
-      '<a href="/admin"  class="py-4"><img class="w-10 cursor-pointer" src="http://clipart-library.com/images/8c65a8Ezi.png" /></a>';
+      '<a href="/admin"  class="py-4"><img class="w-10 cursor-pointer" src="https://upload.wikimedia.org/wikipedia/commons/6/6d/Windows_Settings_app_icon.png" /></a>';
   }
 };
 getUserType();
