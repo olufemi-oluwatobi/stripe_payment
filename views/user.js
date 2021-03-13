@@ -24,8 +24,13 @@ const getUserType = () => {
   const userData = JSON.parse(user);
   const isAdmin = userData.role.toLowerCase() === "admin";
   if (isAdmin) {
-    document.getElementById("admin_gear").innerHTML =
-      '<a href="/admin"  class="py-4"><img class="w-10 cursor-pointer" src="https://upload.wikimedia.org/wikipedia/commons/6/6d/Windows_Settings_app_icon.png" /></a>';
+    document.getElementById("admin_gear").innerHTML +=
+      '<a href="/admin"  class="py-4 flex cursor-pointer items-center"><img  class="w-8" src="https://img.icons8.com/carbon-copy/100/000000/settings.png"/><span>Settings</span></a>';
   }
 };
 getUserType();
+
+const logout = () => {
+  localStorage.removeItem("token");
+  window.location = "/";
+};

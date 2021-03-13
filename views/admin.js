@@ -136,3 +136,7 @@ if (user.length) {
     window.location = "/admin";
   }
 }
+const logout = () => {
+  localStorage.removeItem("token");
+  window.location = "/";
+};

@@ -7,7 +7,7 @@ let customerList;
 // Create our card inputs
 var style = {
   base: {
-    color: "#fff",
+    color: "black",
   },
 };
 const populateDataList = (id, data, getValue) => {

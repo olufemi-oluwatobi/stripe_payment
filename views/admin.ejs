@@ -7,64 +7,76 @@
     <link rel="stylesheet" href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" />
 </head>
 
-<body class="flex h-screen text-gray-900">
-    <div class="text-gray-900 bg-gray-200">
-        <div class="px-3 py-4 flex justify-center">
-            <table id="user_table" class="w-full text-md bg-white shadow-md rounded mb-4">
-                <tbody>
-                    <tr class="border-b">
-                        <th class="text-left p-3 px-5">Name</th>
-                        <th class="text-left p-3 px-5">Role</th>
-                        <th></th>
-                    </tr>
-                </tbody>
-            </table>
+<body class="flex-column h-screen bg-gray-200 text-gray-900">
+    <div class="flex justify-between mb-2 bg-gray-200">
+        <a href="/payment" class="flex py-4 cursor-pointer items-center">
+            <img class="w-5" src="https://img.icons8.com/android/50/000000/back.png" /> <span class="ml-2">Back</span>
+        </a>
+        <div onclick="logout()" class="flex cursor-pointer items-center">
+            <img src="https://img.icons8.com/android/24/000000/logout-rounded-left.png" /> <span
+                class="ml-2">Logout</span>
         </div>
     </div>
-    <div class="w-full bg-white shadow-lg p-8 ">
-        <div class="mb-2 uppercase text-grey-darkes">Create User</div>
-        <div class="mb-2 uppercase text-sm text-red-500">
-            <%-error%>
+    <div class="flex w-full">
+        <div class="text-gray-900 bg-gray-200">
+            <div class="px-3 py-4 flex justify-center">
+                <table id="user_table" class="w-full text-md bg-white shadow-md rounded mb-4">
+                    <tbody>
+                        <tr class="border-b">
+                            <th class="text-left p-3 px-5">Name</th>
+                            <th class="text-left p-3 px-5">Role</th>
+                            <th></th>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <div class="mb-2 uppercase text-sm text-green-500">
-            <%-success%>
+        <div class="w-full bg-white shadow-lg p-8 ">
+            <div class="mb-2 uppercase text-grey-darkes">Create User</div>
+            <div class="mb-2 uppercase text-sm text-red-500">
+                <%-error%>
+            </div>
+            <div class="mb-2 uppercase text-sm text-green-500">
+                <%-success%>
+            </div>
+            <form class="mb-4" action="/users" method="post">
+                <div class="flex">
+                    <div class="flex flex-col mb-4 w-3/6 m-0.5">
+                        <label class="mb-2 uppercase  text-grey-darkest" for="username">username</label>
+                        <input required class="border py-2 px-3 text-grey-darkest" type="username" name="username"
+                            id="username">
+                    </div>
+                    <div class="flex flex-col mb-6 w-3/6 m-0.5">
+                        <label class="mb-2 uppercase text-grey-darkest" for="password">Password</label>
+                        <input required class="border py-2 px-3 text-grey-darkest" type="text" name="password"
+                            id="password">
+                    </div>
+                </div>
+                <div class="flex flex-col mb-6">
+                    <label class="mb-2 uppercase  text-grey-darkest" for="role">Role</label>
+                    <select required class="border py-2 px-3 text-grey-darkest" name="role" id="role">
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <button class="block bg-indigo-700 hover:bg-teal-dark text-white uppercase  mx-auto p-2 rounded"
+                    type="submit">Create Account</button>
+            </form>
+            <form class="mb-4" action="/new_keys" method="post">
+                <div class="flex flex-col mb-2">
+                    <label class="mb-2 uppercase text-grey-darkest" for="username">New Publish Key</label>
+                    <input required class="border py-2 px-3 text-grey-darkest" type="text" name="publishKey"
+                        id="publishKey">
+                </div>
+                <div class="flex flex-col mb-6">
+                    <label class="mb-2 uppercase  text-grey-darkest" for="secretKey">New Secret Key</label>
+                    <input required class="border py-2 px-3 text-grey-darkest" type="text" name="secretKey"
+                        id="secretKey">
+                </div>
+                <button class="block bg-indigo-700 hover:bg-teal-dark text-white uppercase  mx-auto p-2 rounded"
+                    type="submit">Create New Keys</button>
+            </form>
         </div>
-        <form class="mb-4" action="/users" method="post">
-            <div class="flex">
-                <div class="flex flex-col mb-4 w-3/6 m-0.5">
-                    <label class="mb-2 uppercase  text-grey-darkest" for="username">username</label>
-                    <input required class="border py-2 px-3 text-grey-darkest" type="username" name="username"
-                        id="username">
-                </div>
-                <div class="flex flex-col mb-6 w-3/6 m-0.5">
-                    <label class="mb-2 uppercase text-grey-darkest" for="password">Password</label>
-                    <input required class="border py-2 px-3 text-grey-darkest" type="text" name="password"
-                        id="password">
-                </div>
-            </div>
-            <div class="flex flex-col mb-6">
-                <label class="mb-2 uppercase  text-grey-darkest" for="role">Role</label>
-                <select required class="border py-2 px-3 text-grey-darkest" name="role" id="role">
-                    <option value="user">User</option>
-                    <option value="admin">Admin</option>
-                </select>
-            </div>
-            <button class="block bg-indigo-700 hover:bg-teal-dark text-white uppercase  mx-auto p-2 rounded"
-                type="submit">Create Account</button>
-        </form>
-        <form class="mb-4" action="/new_keys" method="post">
-            <div class="flex flex-col mb-2">
-                <label class="mb-2 uppercase text-grey-darkest" for="username">New Publish Key</label>
-                <input required class="border py-2 px-3 text-grey-darkest" type="text" name="publishKey"
-                    id="publishKey">
-            </div>
-            <div class="flex flex-col mb-6">
-                <label class="mb-2 uppercase  text-grey-darkest" for="secretKey">New Secret Key</label>
-                <input required class="border py-2 px-3 text-grey-darkest" type="text" name="secretKey" id="secretKey">
-            </div>
-            <button class="block bg-indigo-700 hover:bg-teal-dark text-white uppercase  mx-auto p-2 rounded"
-                type="submit">Create New Keys</button>
-        </form>
     </div>
 </body>
 <script src="admin.js">
