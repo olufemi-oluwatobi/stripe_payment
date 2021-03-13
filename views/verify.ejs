@@ -1,0 +1,67 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+    <link rel="stylesheet" href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" />
+</head>
+
+<body class="flex h-screen bg-indigo-700">
+    <div class="w-full max-w-xs m-auto bg-indigo-100 rounded p-5">
+        <header>
+            <span id="error_message" class="w-full text-red-500 --2 mb-7 border-b-2">
+                <%= error %>
+            </span>
+            <div class="w-full text-sm mb-3">Enter OTP <%= typeof type !=="undefined" ? type : '' %>sent to <span
+                        class="font-bold text-sm">
+                        <%-email%>
+                    </span>
+            </div>
+        </header>
+        <form action="/login" method="POST" id="form1">
+            <input required hidden
+                class="w-full p-2 mb-6 text-indigo-700 border-b-2 border-indigo-500 outline-none focus:bg-gray-300"
+                type="email" value="<%-email%>" name="email" id="email">
+            <div>
+                <label class=" block mb-2 text-indigo-500" for="code">OTP</label>
+                <input required
+                    class="w-full p-2 mb-6 text-indigo-700 border-b-2 border-indigo-500 outline-none focus:bg-gray-300"
+                    type="number" name="code" id="code">
+                <span hidden name="code" id="code_error" class="text-xs text-red-500">username is
+                    required</span>
+            </div>
+            <div>
+
+                <button class="w-full bg-indigo-700 hover:bg-pink-700 text-white font-bold py-2 px-4 mb-6 rounded"
+                    type="submit">Login</button>
+            </div>
+        </form>
+        <form action="/generate_code?type=re" method="POST" id="form1">
+            <input required hidden
+                class="w-full p-2 mb-6 text-indigo-700 border-b-2 border-indigo-500 outline-none focus:bg-gray-300"
+                type="email" value="<%-email%>" name="email" id="email">
+
+            <div>
+
+                <button class="w-full hover:text-pink-700 text-blue-300 font-bold" type="submit">Resend Code</button>
+            </div>
+        </form>
+    </div>
+</body>
+<script>
+    const resendCode = () => {
+
+        const form = document.createElement("form")
+        form.action = "/generate_code"
+        form.method = 'POST'
+        const input = document.createElement("input")
+        input.value = '<%-email%>'
+        input.name = "email"
+        form.appendChild(input)
+
+        form.submit()
+    }
+</script>
+
+</html>

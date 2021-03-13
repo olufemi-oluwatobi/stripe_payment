@@ -24,6 +24,7 @@
                     <tbody>
                         <tr class="border-b">
                             <th class="text-left p-3 px-5">Name</th>
+                            <th class="text-left p-3 px-5">Status</th>
                             <th class="text-left p-3 px-5">Role</th>
                             <th></th>
                         </tr>
@@ -40,17 +41,11 @@
                 <%-success%>
             </div>
             <form class="mb-4" action="/users" method="post">
-                <div class="flex">
-                    <div class="flex flex-col mb-4 w-3/6 m-0.5">
-                        <label class="mb-2 uppercase  text-grey-darkest" for="username">username</label>
-                        <input required class="border py-2 px-3 text-grey-darkest" type="username" name="username"
-                            id="username">
-                    </div>
-                    <div class="flex flex-col mb-6 w-3/6 m-0.5">
-                        <label class="mb-2 uppercase text-grey-darkest" for="password">Password</label>
-                        <input required class="border py-2 px-3 text-grey-darkest" type="text" name="password"
-                            id="password">
-                    </div>
+
+                <div class="flex flex-col mb-4 ">
+                    <label class="mb-2 uppercase  text-grey-darkest" for="username">Email</label>
+                    <input required class="border py-2 px-3 text-grey-darkest" type="text" name="email" id="email">
+
                 </div>
                 <div class="flex flex-col mb-6">
                     <label class="mb-2 uppercase  text-grey-darkest" for="role">Role</label>

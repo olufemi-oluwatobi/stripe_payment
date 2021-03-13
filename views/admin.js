@@ -5,7 +5,10 @@ const addToUserList = (user) => {
   ).innerHTML += `<tr class="border-b hover:bg-orange-100">
         <td class="p-3 px-5"><input name="username" data-id=${
           user.id
-        } type="text" value="${user.username}" class="bg-transparent"></td>
+        } type="text" value="${user.email}" class="bg-transparent"></td>
+        <td class="p-3 px-5"><input name="username" data-id=${
+          user.id
+        } type="text" value="${user.status}" class="bg-transparent"></td>
         <td class="p-3 px-5">
             <select name="role" value="${user.role.toLowerCase()}" class="bg-transparent">
                 <option ${
@@ -20,7 +23,9 @@ const addToUserList = (user) => {
                 class="mr-3  text-sm bg-blue-500 hover:bg-blue-700 text-white py-1 px-2 rounded focus:outline-none focus:shadow-outline">Save</button><button
                 type="button"
                 onClick="onDelete(this)"
-                class="text-sm bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded focus:outline-none focus:shadow-outline">Delete</button>
+                class="text-sm bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded focus:outline-none focus:shadow-outline">${
+                  user.status === "active" ? "deactivate" : "activate"
+                }</button>
         </td>
         </tr>
         `;

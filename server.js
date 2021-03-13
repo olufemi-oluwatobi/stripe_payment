@@ -143,13 +143,13 @@ app.put("/users/:id", async (req, res) => {
   try {
     const { id } = req.params;
     console.log(id);
-    const { username, role } = req.body;
+    const { email, role } = req.body;
 
     console.log(req.body);
     const { status, data } = await axios({
       url: `http://localhost:4030/user/${id}`,
       method: "PUT",
-      data: { username, role },
+      data: { email, role },
       headers: req.headers,
     });
 
@@ -165,13 +165,13 @@ app.delete("/users/:id", async (req, res) => {
   try {
     const { id } = req.params;
     console.log(id);
-    const { username, role } = req.body;
+    const { email, role } = req.body;
 
     console.log(req.body);
     const { status, data } = await axios({
       url: `http://localhost:4030/user/${id}`,
       method: "DELETE",
-      data: { username, role },
+      data: { email, role },
       headers: req.headers,
     });
 
@@ -185,12 +185,12 @@ app.delete("/users/:id", async (req, res) => {
 
 app.post("/users", async (req, res, next) => {
   try {
-    const { username, password, role } = req.body;
+    const { email, role } = req.body;
 
     const { status, data } = await axios({
       url: "http://localhost:4030/user",
       method: "POST",
-      data: { username, password, role },
+      data: { email, role },
     });
     if (status === 201) {
       console.log(data);
@@ -210,14 +210,60 @@ app.post("/users", async (req, res, next) => {
     return res.render("admin", { error: error.response.data, success: "" });
   }
 });
+
+app.get("/generate_code", (req, res) => {
+  res.render("verify", req.query);
+});
+
+const generateNewPath = (path, query) => {
+  return url.format({
+    pathname: path,
+    query,
+  });
+};
+
+app.post("/generate_code", async (req, res, next) => {
+  try {
+    const { email } = req.body;
+
+    const { status, data } = await axios({
+      url: "http://localhost:4030/generate_code",
+      method: "POST",
+      data: { email },
+    });
+    if (status === 200) {
+      return res.redirect(
+        generateNewPath("/generate_code", { email, error: "", ...req.query })
+      );
+    }
+    return res.render("index", { error: "Invalid Credentials" });
+  } catch (error) {
+    console.log(error);
+    return res.render("index", { error: "invalid credential" });
+  }
+
+  // passport.authenticate("local", (err, user, info) => {
+  //   if (err) return res.status(400).json({ error: err });
+  // });
+  // if (!user) {
+  //   return res.status(400).json({ errors: "No user found" });
+  // }
+  // req.logIn(user, (err) => {
+  //   if (err) {
+  //     return res.status(400).json({ error: err });
+  //   }
+  //   return res.status(200).json({ user });
+  // })(req, res, next);
+});
 app.post("/login", async (req, res, next) => {
   try {
-    const { username, password } = req.body;
+    const { code, email } = req.body;
+    console.log(email);
 
     const { status, data } = await axios({
       url: "http://localhost:4030/login",
       method: "POST",
-      data: { username, password },
+      data: { code, email },
     });
     if (status === 200) {
       const { user, token } = data;
@@ -232,10 +278,16 @@ app.post("/login", async (req, res, next) => {
       });
       return res.redirect(newPath);
     }
-    return res.render("index", { error: "Invalid Credentials" });
+    return res.redirect(
+      generateNewPath("/generate_code", { email, error: "invalid code" })
+    );
   } catch (error) {
-    console.log(error);
-    return res.render("index", { error: "invalid credential" });
+    return res.redirect(
+      generateNewPath("/generate_code", {
+        email: req.body.email,
+        error: "invalid code",
+      })
+    );
   }
 
   // passport.authenticate("local", (err, user, info) => {
