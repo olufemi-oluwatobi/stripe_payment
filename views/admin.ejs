@@ -8,7 +8,7 @@
 </head>
 
 <body class="flex-column h-screen bg-gray-200 text-gray-900">
-    <div class="flex justify-between mb-2 bg-gray-200">
+    <div class="flex justify-between m-2	 bg-gray-200">
         <a href="/payment" class="flex py-4 cursor-pointer items-center">
             <img class="w-5" src="https://img.icons8.com/android/50/000000/back.png" /> <span class="ml-2">Back</span>
         </a>
@@ -17,13 +17,21 @@
                 class="ml-2">Logout</span>
         </div>
     </div>
+    <div class="m-2	" style='border-bottom: 2px solid #eaeaea'>
+        <ul class='flex cursor-pointer'>
+            <li onclick="changetab(this)" class='py-2 px-6 bg-white rounded-t-lg' id="list_tab">List</li>
+            <li onclick="changetab(this)" class='py-2 px-6 bg-white rounded-t-lg text-gray-500 bg-gray-200'
+                id="action_tab">Actions</li>
+        </ul>
+    </div>
     <div class="flex w-full">
-        <div class="text-gray-900 bg-gray-200">
-            <div class="px-3 py-4 flex justify-center">
+        <div id="list_tab_item" class="text-gray-900 w-full bg-gray-200">
+            <div class="px-3 py-4 flex w-full justify-center">
                 <table id="user_table" class="w-full text-md bg-white shadow-md rounded mb-4">
                     <tbody>
                         <tr class="border-b">
                             <th class="text-left p-3 px-5">Name</th>
+                            <th class="text-left p-3 px-5">Username</th>
                             <th class="text-left p-3 px-5">Status</th>
                             <th class="text-left p-3 px-5">Role</th>
                             <th></th>
@@ -32,9 +40,9 @@
                 </table>
             </div>
         </div>
-        <div class="w-full bg-white shadow-lg p-8 ">
+        <div id="action_tab_item" hidden class="w-full items-center bg-white rounded m-4 shadow-lg p-8 ">
             <div class="mb-2 uppercase text-grey-darkes">Create User</div>
-            <div class="mb-2 uppercase text-sm text-red-500">
+            <div class="mb-2 flex items-center uppercase text-sm text-red-500">
                 <%-error%>
             </div>
             <div class="mb-2 uppercase text-sm text-green-500">
@@ -42,14 +50,28 @@
             </div>
             <form class="mb-4" action="/users" method="post">
 
+
+                <div class="flex flex-col mb-2">
+                    <label class="mb-2 uppercase text-grey-darkest" for="username">Username</label>
+                    <input required class="rounded-sm px-4 py-3 mt-3 focus:outline-none bg-gray-100 w-full" type="text"
+                        name="username" id="username">
+                </div>
+                <div class="flex flex-col mb-2">
+                    <label class="mb-2 uppercase text-grey-darkest" for="password">Password</label>
+
+                    <input required class="rounded-sm px-4 py-3 mt-3 focus:outline-none bg-gray-100 w-full" type="text"
+                        name="password" id="password">
+                </div>
                 <div class="flex flex-col mb-4 ">
                     <label class="mb-2 uppercase  text-grey-darkest" for="username">Email</label>
-                    <input required class="border py-2 px-3 text-grey-darkest" type="text" name="email" id="email">
+                    <input required class="rounded-sm px-4 py-3 mt-3 focus:outline-none bg-gray-100 w-full" type="text"
+                        name="email" id="email">
 
                 </div>
                 <div class="flex flex-col mb-6">
                     <label class="mb-2 uppercase  text-grey-darkest" for="role">Role</label>
-                    <select required class="border py-2 px-3 text-grey-darkest" name="role" id="role">
+                    <select required class="rounded-sm px-4 py-3 mt-3 focus:outline-none bg-gray-100 w-full" name="role"
+                        id="role">
                         <option value="user">User</option>
                         <option value="admin">Admin</option>
                     </select>
@@ -60,13 +82,13 @@
             <form class="mb-4" action="/new_keys" method="post">
                 <div class="flex flex-col mb-2">
                     <label class="mb-2 uppercase text-grey-darkest" for="username">New Publish Key</label>
-                    <input required class="border py-2 px-3 text-grey-darkest" type="text" name="publishKey"
-                        id="publishKey">
+                    <input required class="rounded-sm px-4 py-3 mt-3 focus:outline-none bg-gray-100 w-full" type="text"
+                        name="publishKey" id="publishKey">
                 </div>
                 <div class="flex flex-col mb-6">
                     <label class="mb-2 uppercase  text-grey-darkest" for="secretKey">New Secret Key</label>
-                    <input required class="border py-2 px-3 text-grey-darkest" type="text" name="secretKey"
-                        id="secretKey">
+                    <input required class="rounded-sm px-4 py-3 mt-3 focus:outline-none bg-gray-100 w-full" type="text"
+                        name="secretKey" id="secretKey">
                 </div>
                 <button class="block bg-indigo-700 hover:bg-teal-dark text-white uppercase  mx-auto p-2 rounded"
                     type="submit">Create New Keys</button>
@@ -74,7 +96,6 @@
         </div>
     </div>
 </body>
-<script src="admin.js">
-</script>
+<script src="admin.js"></script>
 
 </html>

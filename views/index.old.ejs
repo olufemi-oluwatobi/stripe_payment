@@ -7,27 +7,19 @@
     <link rel="stylesheet" href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" />
 </head>
 
-<body class="flex h-screen">
+<body class="flex h-screen bg-indigo-700">
     <div class="w-full max-w-xs m-auto bg-indigo-100 rounded p-5">
         <header>
             <span id="error_message" class="w-full --2 mb-6 border-b-2">
                 <%= error %>
             </span>
         </header>
-        <form action="/login" method="POST" id="form1">
+        <form action="/generate_code" method="POST" id="form1">
             <div>
-                <label class=" block mb-2 text-indigo-500" for="password">username</label>
+                <label class=" block mb-2 text-indigo-500" for="email">Email</label>
                 <input required
                     class="w-full p-2 mb-6 text-indigo-700 border-b-2 border-indigo-500 outline-none focus:bg-gray-300"
-                    type="username" name="username" id="username">
-                <span hidden name="username" id="username_error" class="text-xs text-red-500">username is
-                    required</span>
-            </div>
-            <div>
-                <label class=" block mb-2 text-indigo-500" for="password">Password</label>
-                <input required
-                    class="w-full p-2 mb-6 text-indigo-700 border-b-2 border-indigo-500 outline-none focus:bg-gray-300"
-                    type="password" name="password" id="password">
+                    type="email" name="email" id="email">
                 <span hidden name="username" id="username_error" class="text-xs text-red-500">username is
                     required</span>
             </div>

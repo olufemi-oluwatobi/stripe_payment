@@ -11,7 +11,7 @@
     <div class="w-full max-w-xs m-auto bg-indigo-100 rounded p-5">
         <header>
             <span id="error_message" class="w-full text-red-500 --2 mb-7 border-b-2">
-                <%= error %>
+                <%= typeof error==="undefined" ? "" : error %>
             </span>
             <div class="w-full text-sm mb-3">Enter OTP <%= typeof type !=="undefined" ? type : '' %>sent to <span
                         class="font-bold text-sm">
@@ -19,7 +19,7 @@
                     </span>
             </div>
         </header>
-        <form action="/login" method="POST" id="form1">
+        <form action="/admin_login" method="POST" id="form1">
             <input required hidden
                 class="w-full p-2 mb-6 text-indigo-700 border-b-2 border-indigo-500 outline-none focus:bg-gray-300"
                 type="email" value="<%-email%>" name="email" id="email">

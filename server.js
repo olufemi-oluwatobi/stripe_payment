@@ -11,6 +11,7 @@ const axios = require("axios");
 const bodyParser = require("body-parser");
 const { SECRET_KEY } = require("./config/index");
 const path = require("path");
+const passport = require("passport");
 
 const instance = axios.create({
   baseURL: "http://localhost:3000/",
@@ -143,13 +144,14 @@ app.put("/users/:id", async (req, res) => {
   try {
     const { id } = req.params;
     console.log(id);
-    const { email, role } = req.body;
+
+    const { email, role, username } = req.body;
 
     console.log(req.body);
     const { status, data } = await axios({
       url: `http://localhost:4030/user/${id}`,
       method: "PUT",
-      data: { email, role },
+      data: { email, role, username },
       headers: req.headers,
     });
 
@@ -158,6 +160,35 @@ app.put("/users/:id", async (req, res) => {
     console.log(error.response.status);
     if (error.response.status === 401) return res.redirect("/");
     res.status(error.response.status).json({ error: error.response.data });
+  }
+});
+
+app.post("/login", async (req, res, next) => {
+  try {
+    const { username, password } = req.body;
+    console.log(username, password);
+    const { status, data } = await axios({
+      url: "http://localhost:4030/login",
+      method: "POST",
+      data: { username, password },
+    });
+    if (status === 200) {
+      const { user, token } = data;
+      delete user.password;
+
+      const newPath = url.format({
+        pathname: "/payment",
+        query: {
+          user: JSON.stringify(user),
+          token,
+        },
+      });
+      return res.redirect(newPath);
+    }
+    return res.render("index", { error: "Invalid Credentials" });
+  } catch (error) {
+    console.log(error);
+    return res.render("index", { error: "invalid credential" });
   }
 });
 
@@ -185,12 +216,12 @@ app.delete("/users/:id", async (req, res) => {
 
 app.post("/users", async (req, res, next) => {
   try {
-    const { email, role } = req.body;
+    const { email, role, username, password } = req.body;
 
     const { status, data } = await axios({
       url: "http://localhost:4030/user",
       method: "POST",
-      data: { email, role },
+      data: { email, role, username, password },
     });
     if (status === 201) {
       console.log(data);
@@ -211,8 +242,21 @@ app.post("/users", async (req, res, next) => {
   }
 });
 
-app.get("/generate_code", (req, res) => {
-  res.render("verify", req.query);
+app.get("/generate_code", async (req, res) => {
+  try {
+    const { email, userType } = req.query;
+    const { status, data } = await axios({
+      url: `http://localhost:4030/generate_code?userType=${userType}`,
+      method: "POST",
+      data: { email },
+    });
+    if (status === 200) {
+      return res.render("verify", req.query);
+    }
+    return res.render("verify", { error: "Invalid Credentials" });
+  } catch (error) {
+    return res.render("verify", { error: "invalid credential" });
+  }
 });
 
 const generateNewPath = (path, query) => {
@@ -236,10 +280,10 @@ app.post("/generate_code", async (req, res, next) => {
         generateNewPath("/generate_code", { email, error: "", ...req.query })
       );
     }
-    return res.render("index", { error: "Invalid Credentials" });
+    return res.render("verify", { error: "Invalid Credentials" });
   } catch (error) {
     console.log(error);
-    return res.render("index", { error: "invalid credential" });
+    return res.render("verify", { error: "invalid credential" });
   }
 
   // passport.authenticate("local", (err, user, info) => {
@@ -255,13 +299,13 @@ app.post("/generate_code", async (req, res, next) => {
   //   return res.status(200).json({ user });
   // })(req, res, next);
 });
-app.post("/login", async (req, res, next) => {
+app.post("/admin_login", async (req, res, next) => {
   try {
     const { code, email } = req.body;
     console.log(email);
 
     const { status, data } = await axios({
-      url: "http://localhost:4030/login",
+      url: "http://localhost:4030/admin_login",
       method: "POST",
       data: { code, email },
     });
@@ -270,12 +314,13 @@ app.post("/login", async (req, res, next) => {
       delete user.password;
 
       const newPath = url.format({
-        pathname: "/payment",
+        pathname: "/admin",
         query: {
           user: JSON.stringify(user),
           token,
         },
       });
+      console.log("admin", newPath);
       return res.redirect(newPath);
     }
     return res.redirect(

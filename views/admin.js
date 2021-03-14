@@ -1,11 +1,77 @@
+const queryData = new URLSearchParams(window.location.search);
+const token = queryData.getAll("token");
+let user = queryData.getAll("user");
+
+if (user.length) {
+  localStorage.setItem("user_data", user);
+}
+
+if (token.length) {
+  localStorage.setItem("token", token);
+}
+
+const removeSearchQuery = () => {
+  if (window.location.search) {
+    const path = window.location.pathname;
+    window.location = path;
+  }
+};
+
+removeSearchQuery();
+function parseJwt(token) {
+  var base64Url = token.split(".")[1];
+  var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+  var jsonPayload = decodeURIComponent(
+    atob(base64)
+      .split("")
+      .map(function (c) {
+        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+      })
+      .join("")
+  );
+
+  return JSON.parse(jsonPayload);
+}
+
+const verifyToken = (token, callback) => {
+  try {
+    if (!token) {
+      window.location = "/";
+      return;
+    }
+    const tokenObject = parseJwt(token);
+    const { exp, role, type, email } = tokenObject;
+    if (Date.now() >= exp * 1000) {
+      return (window.location = "/");
+    } else {
+      if (role !== "admin" && type !== "2fa") {
+        window.location = `/generate_code?email=${email}&userType=admin`;
+        return;
+      }
+      return;
+    }
+  } catch (error) {
+    console.log(error);
+    return callback("error", null);
+  }
+};
+
+verifyToken(localStorage.getItem("token"), (error, data) => {
+  if (error) return (window.location = "/");
+  window.location = "";
+});
 const addToUserList = (user) => {
+  console.log(user);
   console.log(user.role.toLowerCase(), user.role.toLowerCase() === "user");
   document.getElementById(
     "user_table"
   ).innerHTML += `<tr class="border-b hover:bg-orange-100">
-        <td class="p-3 px-5"><input name="username" data-id=${
+        <td class="p-3 px-5"><input required id="email" name="email" data-id=${
           user.id
-        } type="text" value="${user.email}" class="bg-transparent"></td>
+        } type="email" value="${user.email}" class="bg-transparent"></td>
+        <td class="p-3 px-5"><input id="username" name="username" data-id=${
+          user.id
+        } type="text" value="${user.username}" class="bg-transparent"></td>
         <td class="p-3 px-5"><input name="username" data-id=${
           user.id
         } type="text" value="${user.status}" class="bg-transparent"></td>
@@ -37,7 +103,9 @@ const onEdit = (button) => {
     .querySelector("input")
     .getAttribute("data-id");
   console.log(id);
-  const username = button.parentNode.parentNode.querySelector("input").value;
+  const username = button.parentNode.parentNode.querySelector("#username")
+    .value;
+  const email = button.parentNode.parentNode.querySelector("#email").value;
   const role = button.parentNode.parentNode.querySelector("select").value;
   const token = localStorage.getItem("token");
   console.log("token", token);
@@ -51,7 +119,7 @@ const onEdit = (button) => {
       Authorization: token,
       "Content-Type": "application/json",
     }),
-    body: JSON.stringify({ username, role }),
+    body: JSON.stringify({ username, role, email }),
   })
     .then((res) => {
       status = res.status;
@@ -131,17 +199,33 @@ const getUserList = () => {
 
 getUserList();
 
-const queryData = new URLSearchParams(window.location.search);
-let user = queryData.getAll("user");
-
-if (user.length) {
-  user = JSON.parse(user);
-  addToUserList(user);
-  if (window.location.search) {
-    window.location = "/admin";
-  }
-}
 const logout = () => {
   localStorage.removeItem("token");
   window.location = "/";
+};
+
+const toggleTabView = (element) => {
+  const { id: elementId } = element;
+  const inactiveTabItem = {
+    action_tab: "list_tab_item",
+    list_tab: "action_tab_item",
+  };
+  console.log(inactiveTabItem[elementId], elementId);
+  console.log(document.getElementById(`${elementId}_item`).hidden);
+  document.getElementById(`${elementId}_item`).hidden = false;
+  document.getElementById(inactiveTabItem[elementId]).hidden = true;
+};
+
+const changetab = (element) => {
+  const activeTabClass = "py-2 px-6 bg-white rounded-t-lg";
+  const inactiveTab = {
+    action_tab: "list_tab",
+    list_tab: "action_tab",
+  };
+  const inactiveTabClass =
+    "py-2 px-6 bg-white rounded-t-lg text-gray-500 bg-gray-200";
+  const elementId = element.id;
+  element.className = activeTabClass;
+  document.getElementById(inactiveTab[elementId]).className = inactiveTabClass;
+  toggleTabView(element);
 };

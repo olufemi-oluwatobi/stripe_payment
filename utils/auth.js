@@ -1,28 +1,26 @@
-var jwt = require("express-jwt");
-var { SECRET_KEY } = require("../config");
+function parseJwt(token) {
+  var base64Url = token.split(".")[1];
+  var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+  var jsonPayload = decodeURIComponent(
+    atob(base64)
+      .split("")
+      .map(function (c) {
+        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+      })
+      .join("")
+  );
 
-function getTokenFromHeader(req) {
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.split(" ")[0] === "Token"
-  ) {
-    return req.headers.authorization.split(" ")[1];
-  }
-
-  return null;
+  return JSON.parse(jsonPayload);
 }
 
-var auth = {
-  required: jwt({
-    secret: secret,
-    userProperty: "payload",
-    getToken: getTokenFromHeader,
-  }),
-  optional: jwt({
-    secret: secret,
-    userProperty: "payload",
-    credentialsRequired: false,
-    getToken: getTokenFromHeader,
-  }),
+const verifyToken = (token, callback) => {
+  try {
+    if (!token) callback("error", null);
+    const tokenObject = parseJwt(token);
+    console.log(tokenObject);
+  } catch (error) {
+    return callback("error", null);
+  }
 };
-module.exports = auth;
+
+module.exports = { parseJwt, verifyToken };

@@ -12,7 +12,8 @@ if (token.length) {
 
 const removeSearchQuery = () => {
   if (window.location.search) {
-    window.location = "/payment";
+    const path = window.location.pathname;
+    window.location = path;
   }
 };
 
@@ -24,8 +25,9 @@ const getUserType = () => {
   const userData = JSON.parse(user);
   const isAdmin = userData.role.toLowerCase() === "admin";
   if (isAdmin) {
-    document.getElementById("admin_gear").innerHTML +=
-      '<a href="/admin"  class="py-4 flex cursor-pointer items-center"><img  class="w-8" src="https://img.icons8.com/carbon-copy/100/000000/settings.png"/><span>Settings</span></a>';
+    document.getElementById(
+      "admin_gear"
+    ).innerHTML += `<a href="/generate_code?email=${userData.email}&userType=admin" class="py-4 flex cursor-pointer items-center"><img  class="w-8" src="https://img.icons8.com/carbon-copy/100/000000/settings.png"/><span>Settings</span></a>`;
   }
 };
 getUserType();
