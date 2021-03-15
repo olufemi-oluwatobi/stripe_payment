@@ -27,7 +27,7 @@ const getUserType = () => {
   if (isAdmin) {
     document.getElementById(
       "admin_gear"
-    ).innerHTML += `<a href="/generate_code?email=${userData.email}&userType=admin" class="py-4 flex cursor-pointer items-center"><img  class="w-8" src="https://img.icons8.com/carbon-copy/100/000000/settings.png"/><span>Settings</span></a>`;
+    ).innerHTML += `<a href="/generate_code?email=${userData.email}&userType=admin" class="block px-4 py-2 text-sm capitalize text-gray-700 hover:bg-blue-500 hover:text-white">Settings</a>`;
   }
 };
 getUserType();

@@ -43,10 +43,10 @@
         <div id="action_tab_item" hidden class="w-full items-center bg-white rounded m-4 shadow-lg p-8 ">
             <div class="mb-2 uppercase text-grey-darkes">Create User</div>
             <div class="mb-2 flex items-center uppercase text-sm text-red-500">
-                <%-error%>
+                <%= typeof error==="undefined" ? "" : error%>
             </div>
             <div class="mb-2 uppercase text-sm text-green-500">
-                <%-success%>
+                <%= typeof success==="undefined" ? "" : success%>
             </div>
             <form class="mb-4" action="/users" method="post">
 

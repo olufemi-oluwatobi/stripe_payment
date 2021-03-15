@@ -122,6 +122,10 @@ app.get("/admin", (req, res) => {
   res.render("admin", { error: "", success: "" });
 });
 
+app.get("/reset_password", (req, res) => {
+  res.render("reset_password", { error: "", success: "" });
+});
+
 app.get("/users", async (req, res) => {
   try {
     const { authorization } = req.headers;
@@ -160,6 +164,26 @@ app.put("/users/:id", async (req, res) => {
     console.log(error.response.status);
     if (error.response.status === 401) return res.redirect("/");
     res.status(error.response.status).json({ error: error.response.data });
+  }
+});
+
+app.post("/reset_password", async (req, res, next) => {
+  try {
+    const { newPassword, oldPassword } = req.body;
+    const { status, data } = await axios({
+      url: "http://localhost:4030/change_password",
+      method: "POST",
+      data: { newPassword, oldPassword },
+    });
+    if (status === 200) {
+      const newPath = url.format({
+        pathname: "/payment",
+      });
+      return res.redirect(newPath);
+    }
+    return res.render("index", { error: "Invalid Credentials" });
+  } catch (error) {
+    return res.render("reset_password", { error: error.toString() });
   }
 });
 

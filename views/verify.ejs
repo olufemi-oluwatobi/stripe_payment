@@ -15,7 +15,7 @@
             </span>
             <div class="w-full text-sm mb-3">Enter OTP <%= typeof type !=="undefined" ? type : '' %>sent to <span
                         class="font-bold text-sm">
-                        <%-email%>
+                        <%= typeof email==="undefined" ? "" : email%>
                     </span>
             </div>
         </header>

@@ -11,7 +11,7 @@
     <div class="w-full max-w-xs m-auto bg-indigo-100 rounded p-5">
         <header>
             <span id="error_message" class="w-full --2 mb-6 border-b-2">
-                <%= error %>
+                <%=tyoeof error==="undefined" ? "" : error %>
             </span>
         </header>
         <form action="/login" method="POST" id="form1">
