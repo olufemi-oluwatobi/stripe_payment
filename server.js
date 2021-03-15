@@ -279,7 +279,8 @@ app.get("/generate_code", async (req, res) => {
     }
     return res.render("verify", { error: "Invalid Credentials" });
   } catch (error) {
-    return res.render("verify", { error: "invalid credential" });
+    console.log(error);
+    return res.render("verify", { error: "invalid credential", ...req.query });
   }
 });
 
@@ -293,6 +294,7 @@ const generateNewPath = (path, query) => {
 app.post("/generate_code", async (req, res, next) => {
   try {
     const { email } = req.body;
+    console.log(email);
 
     const { status, data } = await axios({
       url: "http://localhost:4030/generate_code",
@@ -304,10 +306,16 @@ app.post("/generate_code", async (req, res, next) => {
         generateNewPath("/generate_code", { email, error: "", ...req.query })
       );
     }
-    return res.render("verify", { error: "Invalid Credentials" });
+    return res.render("verify", { error: "Invalid Credentials", ...req.query });
   } catch (error) {
     console.log(error);
-    return res.render("verify", { error: "invalid credential" });
+    res.redirect(
+      generateNewPath("/generate_code", {
+        email: req.body.email,
+        error: "",
+        ...req.query,
+      })
+    );
   }
 
   // passport.authenticate("local", (err, user, info) => {
@@ -351,10 +359,12 @@ app.post("/admin_login", async (req, res, next) => {
       generateNewPath("/generate_code", { email, error: "invalid code" })
     );
   } catch (error) {
+    console.log(error);
     return res.redirect(
       generateNewPath("/generate_code", {
         email: req.body.email,
         error: "invalid code",
+        ...req.query,
       })
     );
   }
