@@ -134,24 +134,34 @@ emailInput.addEventListener("change", (e) => {
     const customer = customerList.filter(
       (customer) => customer.email === value
     );
-
+    console.log(customer);
+    console.log(customer[0]);
     if (customer[0]) {
       document.getElementById("input-name").value = customer[0].name;
+      console.log("down heree");
       getCustomerCards(customer[0].id);
     }
   }
 });
 
 nameInput.addEventListener("change", (e) => {
-  const { value } = e.target;
-  if (customerList) {
-    console.log(value, "in heree");
-    const customer = customerList.filter((customer) => customer.name === value);
-    console.log(customer);
-    if (customer[0]) {
-      document.getElementById("input-email").value = customer[0].email;
-      getCustomerCards(customer[0].id);
+  try {
+    const { value } = e.target;
+    if (customerList) {
+      console.log(value, "in heree");
+      const customer = customerList.filter(
+        (customer) => customer.name === value
+      );
+      console.log("customers", customer);
+      console.log("customerseee ====>", customer[0]);
+      if (customer[0]) {
+        console.log("down herer");
+        document.getElementById("input-email").value = customer[0].email;
+        getCustomerCards(customer[0].id);
+      }
     }
+  } catch (error) {
+    console.log(error);
   }
 });
 

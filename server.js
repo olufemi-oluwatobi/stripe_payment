@@ -389,11 +389,21 @@ app.get("/payment", async (req, res, next) => {
 });
 
 app.get("/customers/:id/cards", async (req, res) => {
-  const cards = await stripe.customers.listSources(req.params.id, {
-    object: "card",
-    limit: 3,
-  });
-  res.status(200).json(cards.data);
+  console.log("here");
+  try {
+    let methods = await stripe.paymentMethods.list({
+      type: "card",
+      customer: req.params.id,
+      limit: 100,
+    });
+    methods = methods.data
+      .filter((card) => card.type === "card")
+      .map((method) => ({ id: method.id, ...method.card }));
+
+    res.status(200).json(methods);
+  } catch (error) {
+    console.log(error);
+  }
 });
 app.get("/authorize", (req, res) => {
   console.log(req);
