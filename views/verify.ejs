@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" />
 </head>
 
-<body class="flex h-screen bg-indigo-700">
+<body class="flex h-screen">
     <div class="w-full max-w-xs m-auto bg-indigo-100 rounded p-5">
         <header>
             <span id="error_message" class="w-full text-red-500 --2 mb-7 border-b-2">
@@ -24,8 +24,7 @@
                 type="email" value="<%-email%>" name="email" id="email">
             <div>
                 <label class=" block mb-2 text-indigo-500" for="code">OTP</label>
-                <input required
-                    class="w-full p-2 mb-6 text-indigo-700 border-b-2 border-indigo-500 outline-none focus:bg-gray-300"
+                <input required class="w-full p-2 mb-6 text-indigo-700 border-b-2 outline-none focus:bg-gray-300"
                     type="number" name="code" id="code">
                 <span hidden name="code" id="code_error" class="text-xs text-red-500">username is
                     required</span>
