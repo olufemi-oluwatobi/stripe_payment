@@ -11,6 +11,7 @@ var style = {
   },
 };
 const populateDataList = (id, data, getValue) => {
+  document.getElementById("input-card-list").value = "";
   var options = "";
 
   for (var i = 0; i < data.length; i++) {
