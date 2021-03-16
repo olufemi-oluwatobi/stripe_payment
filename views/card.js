@@ -20,7 +20,7 @@ const populateDataList = (id, data, getValue) => {
   }
   document.getElementById(id).innerHTML = options;
 };
-const card = elements.create("card", { style });
+const card = elements.create("card", { hidePostalCode: true, style });
 let customerCards;
 
 const getCustomerList = () => {
