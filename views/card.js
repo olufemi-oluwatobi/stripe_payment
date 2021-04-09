@@ -1,5 +1,5 @@
 const stripe = Stripe(
-  "pk_test_51H63DSDC32qKcNvNV4AHH65chUEkhJSpQull5HypRjF8Q0NxvcO3zOcU8JTuE1SCAxHF2WfRVwIBPrZz9bqULE2N00AiewAo3v"
+  "pk_live_51H63DSDC32qKcNvNV4AHH65chUEkhJSpQull5HypRjF8Q0NxvcO3zOcU8JTuE1SCAxHF2WfRVwIBPrZz9bqULE2N00AiewAo3v"
 ); // Your Publishable Key
 
 const elements = stripe.elements();
@@ -40,6 +40,7 @@ const displayCardList = (cards) => {
   if (cards.length) {
     document.getElementById("card-element").hidden = true;
     document.getElementById("input-card-list").hidden = false;
+    document.getElementById("new-card").hidden = false;
 
     populateDataList(
       "card-list",
@@ -49,6 +50,27 @@ const displayCardList = (cards) => {
   } else {
     document.getElementById("card-element").hidden = false;
     document.getElementById("input-card-list").hidden = true;
+    setHidden("new-card", true);
+  }
+};
+
+const setHidden = (id, isHidden) => {
+  document.getElementById(id).hidden = isHidden;
+};
+
+const setInnerText = (id, text) => {
+  document.getElementById(id).innerText = text;
+};
+const addNewCard = () => {
+  const cardListIsHidden = document.getElementById("input-card-list").hidden;
+  if (cardListIsHidden && customerCards) {
+    setHidden("card-element", true);
+    setHidden("input-card-list", false);
+    setInnerText("new-card", "Add New Card");
+  } else {
+    setHidden("card-element", false);
+    setHidden("input-card-list", true);
+    setInnerText("new-card", "Use Existing Card");
   }
 };
 
@@ -128,38 +150,59 @@ const nameInput = document.getElementById("input-name");
 const emailInput = document.getElementById("input-email");
 const cardInput = document.getElementById("input-card-list");
 
-emailInput.addEventListener("change", (e) => {
+emailInput.addEventListener("input", (e) => {
   const { value } = e.target;
+  if (!value) {
+    e.preventDefault();
+    setHidden("card-element", false);
+    setHidden("card-list", true);
+    setHidden("input-card-list", true);
+  }
   if (customerList) {
-    console.log(value, "in heree");
     const customer = customerList.filter(
       (customer) => customer.email === value
     );
-    console.log(customer);
-    console.log(customer[0]);
+
     if (customer[0]) {
       document.getElementById("input-name").value = customer[0].name;
-      console.log("down heree");
       getCustomerCards(customer[0].id);
+    } else {
+      setHidden("card-element", false);
+      setHidden("card-list", true);
+      setHidden("input-card-list", true);
     }
+  } else {
+    setHidden("card-element", false);
+    setHidden("card-list", true);
+    setHidden("input-card-list", true);
   }
 });
 
-nameInput.addEventListener("change", (e) => {
+nameInput.addEventListener("input", (e) => {
   try {
+    e.preventDefault();
     const { value } = e.target;
+    if (!value) {
+      setHidden("card-element", false);
+      setHidden("new-card", true);
+      setHidden("input-card-list", true);
+    }
     if (customerList) {
-      console.log(value, "in heree");
       const customer = customerList.filter(
         (customer) => customer.name === value
       );
-      console.log("customers", customer);
-      console.log("customerseee ====>", customer[0]);
       if (customer[0]) {
-        console.log("down herer");
         document.getElementById("input-email").value = customer[0].email;
         getCustomerCards(customer[0].id);
+      } else {
+        setHidden("card-element", false);
+        setHidden("new-card", true);
+        setHidden("input-card-list", true);
       }
+    } else {
+      setHidden("card-element", false);
+      setHidden("new-card", true);
+      setHidden("input-card-list", true);
     }
   } catch (error) {
     console.log(error);
